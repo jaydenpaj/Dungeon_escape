@@ -367,7 +367,7 @@ def run_tests() -> None:
     assert_equal(s.player_name, "Ada")
 
     s = new_state()
-    choose_room(s, "Vault") 
+    choose_room(s, "Vault")
     assert_equal(s.dungeon_room, START_ROOM)
     choose_room(s, "Goblin Den")
     assert_equal(s.dungeon_room, "Goblin Den")
@@ -378,7 +378,7 @@ def run_tests() -> None:
     assert_equal(s.hours_left, START_HOURS - 2)
     assert_equal(s.money, START_MONEY + 5)
     assert_equal(s.inventory, [crystal])
-    loot_room(s, True) 
+    loot_room(s, True)
     assert_equal(s.inventory, [crystal])
     assert_equal(s.hours_left, START_HOURS - 4)
 
@@ -410,7 +410,7 @@ def run_tests() -> None:
     finale(s)
     assert_equal(s, new_state())
     s.hours_left = 0
-    time_left(s) 
+    time_left(s)
     assert_equal(s.hours_left, 0)
 
 
@@ -418,13 +418,14 @@ run_tests()
 
 set_website_title("Dungeon Escape")
 set_site_information(
-    author="Your Name (your_email@udel.edu)",
+    author="Jayden Pajanel (jaypaj@udel.edu)",
     description="A story game where you collect coins and get items "
                 "to escape a dungeon.",
     sources="Drafter documentation and an AI assistant (see the LLM "
             "conversation file in the repository).",
-    planning=["planning.pdf"],
-    links=["https://github.com/jaydenpaj/CISC106-Project"],
+    planning=["Copy of CS1 Final Project 0_ Pick a Problem.pdf",
+             "Copy of CS1 Final Project 1_ Design.pdf"],
+    links=["https://github.com/jaydenpaj/Dungeon_escape"],
 )
 hide_debug_information()
 set_website_framed(False)
