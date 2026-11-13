@@ -10,6 +10,9 @@ POWER_UP_VALUE = 20
 POWER_UP_BONUS = 5
 LOOT_GOAL = 40
 ROOMS = ["Crystal Cave", "Goblin Den", "Flooded Tunnel", "Vault"]
+IMAGE_WIDTH = 480
+START_PICTURE = "dungeon escape starting page.jpg"
+EXPLORE_PICTURE = "which way.jpg"
 
 
 @dataclass
@@ -51,6 +54,7 @@ class State:
 def new_state() -> State:
     """Creates the starting State for a new game."""
     return State("", START_HOURS, START_ROOM, START_MONEY, [], START_MESSAGE)
+
 
 def make_item(room: str) -> Item:
     """Creates the loot hidden in the given room."""
@@ -98,6 +102,31 @@ def room_description(room: str) -> str:
         return "Cold water rises to your knees. Something floats nearby."
     else:
         return "The guard steps aside. A dragon egg rests on an altar."
+
+
+def room_picture(room: str) -> str:
+    """Returns the filename of the picture for the given room."""
+    if room == "Crystal Cave":
+        return "crystal cave.jpg"
+    elif room == "Goblin Den":
+        return "goblin den.jpg"
+    elif room == "Flooded Tunnel":
+        return "flooded tunnel.jpg"
+    else:
+        return "the vault.jpg"
+
+
+def ending_picture(ending: str) -> str:
+    """Returns the filename of the picture for the given ending."""
+    if ending == "victory":
+        return "victory.jpg"
+    else:
+        return "fail page.jpg"
+
+
+def picture(filename: str) -> Image:
+    """Builds a picture component from an image file in the repository."""
+    return Image(filename, width=IMAGE_WIDTH)
 
 
 def has_item(items: list[Item], name: str) -> bool:
@@ -175,6 +204,7 @@ def ending_page(state: State, ending: str) -> Page:
         title = "Game Over"
     return Page(state, [
         Header(title),
+        picture(ending_picture(ending)),
         ending_text(ending, state.player_name),
         "Final score: " + str(final_score(state.inventory))
         + " (goal: " + str(LOOT_GOAL) + ")",
@@ -188,6 +218,7 @@ def index(state: State) -> Page:
     """The start screen, where the player enters their name."""
     return Page(state, [
         Header("Dungeon Escape"),
+        picture(START_PICTURE),
         "The dungeon is collapsing. Grab " + str(LOOT_GOAL)
         + " points of loot and get out alive!",
         "What is your name?",
@@ -232,6 +263,7 @@ def explore(state: State) -> Page:
     """Lets the player pick which room to enter."""
     return Page(state, [
         Header("Which way?"),
+        picture(EXPLORE_PICTURE),
         BulletedList(room_lines()),
         "The Vault guard wants " + str(VAULT_COST) + " coins to open the door.",
         SelectBox("cave", ROOMS, ROOMS[0]),
@@ -245,6 +277,7 @@ def choose_room(state: State, cave: str) -> Page:
     if cave == "Vault" and state.money < VAULT_COST:
         return Page(state, [
             Header("Locked!"),
+            picture(room_picture(cave)),
             "The guard blocks the door. You need " + str(VAULT_COST)
             + " coins.",
             Button("Back", "time_left"),
@@ -253,6 +286,7 @@ def choose_room(state: State, cave: str) -> Page:
     item = make_item(cave)
     return Page(state, [
         Header(cave),
+        picture(room_picture(cave)),
         room_description(cave),
         CheckBox("take_item", False),
         "Pick up the " + item.name + " (worth " + str(item.value) + ")",
@@ -342,6 +376,13 @@ def run_tests() -> None:
     assert_equal(room_cost("Flooded Tunnel"), 1)
     assert_equal(room_coins("Goblin Den"), 10)
     assert_equal(room_coins("Vault"), 0)
+    assert_equal(room_picture("Crystal Cave"), "crystal cave.jpg")
+    assert_equal(room_picture("Goblin Den"), "goblin den.jpg")
+    assert_equal(room_picture("Flooded Tunnel"), "flooded tunnel.jpg")
+    assert_equal(room_picture("Vault"), "the vault.jpg")
+    assert_equal(ending_picture("victory"), "victory.jpg")
+    assert_equal(ending_picture("late"), "fail page.jpg")
+    assert_equal(ending_picture("poor"), "fail page.jpg")
     assert_equal(has_item([crystal, dagger], "Goblin Dagger"), True)
     assert_equal(has_item([crystal], "Goblin Dagger"), False)
     assert_equal(has_item([], "Goblin Dagger"), False)
@@ -424,7 +465,7 @@ set_site_information(
     sources="Drafter documentation and an AI assistant (see the LLM "
             "conversation file in the repository).",
     planning=["Copy of CS1 Final Project 0_ Pick a Problem.pdf",
-             "Copy of CS1 Final Project 1_ Design.pdf"],
+              "Copy of CS1 Final Project 1_ Design.pdf"],
     links=["https://github.com/jaydenpaj/Dungeon_escape"],
 )
 hide_debug_information()
